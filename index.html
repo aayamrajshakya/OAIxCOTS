@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COTS UE for AERPAW</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>COTS UE for AERPAW (exploring alternatives)</h1>
+
+    <div class="warning">
+        <p>❗ We have to run the following two programming commands before we run the Open5GS container</p>
+    </div>
+
+    <h2>Opencells SIM programming</h2>
+
+    <pre><code>sudo ./program_uicc --adm 11405625 --imsi 001010000088516  --isdn 00000001 --acc 0040 --key 8EAE4E0E5BFAC60B65E192581234D02A --opc 9CA4C48F83E123270B66E31FF68FB289 -spn "OpenAirInterface" --authenticate</code></pre>
+
+    <h2>Pysim SIM programming</h2>
+
+    <pre><code>./pySim-prog.py -p0 -s 8988211000000885163 -x 001 -y 01 -a 11405625 --imsi=001010000088516 --opc=9CA4C48F83E123270B66E31FF68FB289 --msisdn=00000001 --acc 0040 -k 8EAE4E0E5BFAC60B65E192581234D02A -n "OpenAirInterface"</code></pre>
+
+    <h2>Check for the <code>dnn</code> parameter in Open5GS config file:</h2>
+
+    <p>📁 Config filepath: <code>/opt/open5gs/build/configs/open5gs_nr_core_oai.yaml</code></p>
+
+    <p>Look for the <code>dnn</code> parameter under SMF & UPF, which should match with the <code>APN</code> of the SIM card.</p>
+
+    <img src="/OAIxCOTS/images/apn.png" alt="APN configuration" style="width: 271px; display: block; margin: auto;">
+    <br>
+
+    <div class="warning">
+        <p>⚠️ Make sure both the name and APN are exactly the same</p>
+    </div>
+
+    <h1>How to run</h1>
+
+    <h2>1) Start the docker container:</h2>
+
+    <pre><code>sudo docker run -it --privileged -v /dev/bus/usb:/dev/bus/usb --net host --cap-add=NET_ADMIN --cap-add=SYS_NICE 7ea939d733c6 /bin/bash</code></pre>
+
+    <h2>2) Initiate a TMUX session and start Open5GS:</h2>
+
+    <pre><code>cd ~/Profiles/ProfileScripts/Radio/Helpers
+./startOpen5GS.sh /opt/open5gs/build/configs/open5gs_nr_core_oai.yaml</code></pre>
+
+    <h2>3) Add SIM parameters to the Open5GS database:</h2>
+
+    <pre><code>/opt/open5gs/build/misc/db/open5gs-dbctl add 001010000088516 8EAE4E0E5BFAC60B65E192581234D02A 9CA4C48F83E123270B66E31FF68FB289</code></pre>
+
+    <h2>4) Open a second TMUX session and start gNB:</h2>
+
+    <pre><code>cd ~/Profiles/ProfileScripts/Radio/Helpers
+export LAUNCH_MODE=TESTBED
+./start_OAI_gNB.sh</code></pre>
+
+    <h2>5) Run network performance tests:</h2>
+
+    <p>For the purpose of testing, we used the following apps:</p>
+    <div style="display: flex; gap: 10px;">
+        <img src="/OAIxCOTS/images/app1.png" alt="app1" width="320">
+        <img src="/OAIxCOTS/images/app2.png" alt="app2" width="320">
+    </div>
+
+    <h3>Traffic results:</h3>
+
+    <div style="display: flex; gap: 10px;">
+        <img src="/OAIxCOTS/images/iperf.png" alt="iperf" width="320">
+        <img src="/OAIxCOTS/images/ping.png" alt="ping" width="320">
+    </div>
+
+    <h3>Graph:</h3>
+
+    <div class="slider">
+        <button class="prev" onclick="moveSlide(-1)">&#10094;</button>
+        <div class="slides">
+            <div class="slide">
+                <figure>
+                    <img src="/OAIxCOTS/images/20M.png" alt="20M">
+                    <figcaption class="caption">Graph #1: 20M</figcaption>
+                </figure>
+            </div>
+            <div class="slide">
+                <figure>
+                    <img src="/OAIxCOTS/images/50M.png" alt="50M">
+                    <figcaption class="caption">Graph #2: 50M</figcaption>
+                </figure>
+            </div>
+            <div class="slide">
+                <figure>
+                    <img src="/OAIxCOTS/images/100M.png" alt="100M">
+                    <figcaption class="caption">Graph #3: 100M</figcaption>
+                </figure>
+            </div>
+        </div>
+        <button class="next" onclick="moveSlide(1)">&#10095;</button>
+    </div>
+
+    <h2>Possible issues</h2>
+    
+    <p>We previously faced an issue where the connection would disconnect within 60 seconds, even though the COTS UE was right in front of the USRP. The specific error we encountered was <code>Request release after UL failure timer expiry</code>.</p>
+    
+    <img src="/OAIxCOTS/images/error.png" alt="Error message" style="width: 79%;">
+    
+    <p>We did the following to solve the disconnection issues:</p>
+
+    <ol>
+        <li>Dial <code>*#*#0702#*#*</code>.</li>
+        <li>Change <code>NR_TIMER_WAIT_IMS_REGISTRATION</code> to -1 to prevent IMS registration from timing out, ensuring uninterrupted service without unnecessary retries.</li>
+        <li>Change the value of <code>SUPPORT_IMS_NR_REGISTRATION_TIMER</code> from 1 to 0 to disable the timer, removing its role in IMS NR registration.</li>
+    </ol>
+    
+    <p>For full reference, check the <a href="https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed/-/blob/master/docs/LIST_OF_TESTED_COTSUE.md">official guide</a>.</p>
+    
+    <h2>Performance Tuning</h2>
+    <img src="/OAIxCOTS/images/speedstep.jpg" alt="SpeedStep BIOS setting" style="width: 79%;">
+
+    <p>We also recommend that users disable SpeedStep from the BIOS menu.</p>
+
+    <script>
+        let currentSlide = 0;
+
+        function moveSlide(step) {
+            const slides = document.querySelector('.slides');
+            const totalSlides = document.querySelectorAll('.slide').length;
+            
+            currentSlide = (currentSlide + step + totalSlides) % totalSlides;
+            slides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        }
+    </script>
+</body>
+</html>
