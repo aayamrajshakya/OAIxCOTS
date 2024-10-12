@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>COTS UE for AERPAW</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/png" href="/OAIxCOTS/images/favicon/favicon-48x48.png" sizes="48x48" />
+    <link rel="icon" type="image/svg+xml" href="/OAIxCOTS/images/favicon/favicon.svg" />
+    <link rel="shortcut icon" href="/OAIxCOTS/images/favicon/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/OAIxCOTS/images/favicon/apple-touch-icon.png" />
+    <link rel="manifest" href="/OAIxCOTS/images/favicon/site.webmanifest" />
 </head>
 <body>
     <h1>COTS UE for AERPAW (exploring alternatives)</h1>
@@ -27,7 +32,7 @@
 
     <p>Look for the <code>dnn</code> parameter under SMF & UPF, which should match with the <code>APN</code> of the SIM card.</p>
 
-    <img src="/OAIxCOTS/images/apn.png" alt="APN configuration" style="width: 271px; display: block; margin: auto;">
+    <img src="/OAIxCOTS/images/general/apn.png" alt="APN configuration" style="width: 271px; display: block; margin: auto;">
     <br>
 
     <div class="warning">
@@ -59,15 +64,15 @@ export LAUNCH_MODE=TESTBED
 
     <p>For the purpose of testing, we used the following apps:</p>
     <div style="display: flex; gap: 10px;">
-        <img src="/OAIxCOTS/images/app1.png" alt="app1" width="320">
-        <img src="/OAIxCOTS/images/app2.png" alt="app2" width="320">
+        <img src="/OAIxCOTS/images/general/app1.png" alt="app1" width="320">
+        <img src="/OAIxCOTS/images/general/app2.png" alt="app2" width="320">
     </div>
 
     <h3>Traffic results:</h3>
 
     <div style="display: flex; gap: 10px;">
-        <img src="/OAIxCOTS/images/iperf.png" alt="iperf" width="320">
-        <img src="/OAIxCOTS/images/ping.png" alt="ping" width="320">
+        <img src="/OAIxCOTS/images/general/iperf.png" alt="iperf" width="320">
+        <img src="/OAIxCOTS/images/general/ping.png" alt="ping" width="320">
     </div>
 
     <h3>Graph:</h3>
@@ -77,19 +82,19 @@ export LAUNCH_MODE=TESTBED
         <div class="slides">
             <div class="slide">
                 <figure>
-                    <img src="/OAIxCOTS/images/20M.png" alt="20M">
+                    <img src="/OAIxCOTS/images/general/20M.png" alt="20M">
                     <figcaption class="caption">Graph #1: 20M</figcaption>
                 </figure>
             </div>
             <div class="slide">
                 <figure>
-                    <img src="/OAIxCOTS/images/50M.png" alt="50M">
+                    <img src="/OAIxCOTS/images/general/50M.png" alt="50M">
                     <figcaption class="caption">Graph #2: 50M</figcaption>
                 </figure>
             </div>
             <div class="slide">
                 <figure>
-                    <img src="/OAIxCOTS/images/100M.png" alt="100M">
+                    <img src="/OAIxCOTS/images/general/100M.png" alt="100M">
                     <figcaption class="caption">Graph #3: 100M</figcaption>
                 </figure>
             </div>
@@ -101,7 +106,7 @@ export LAUNCH_MODE=TESTBED
     
     <p>We previously faced an issue where the connection would disconnect within 60 seconds, even though the COTS UE was right in front of the USRP. The specific error we encountered was <code>Request release after UL failure timer expiry</code>.</p>
     
-    <img src="/OAIxCOTS/images/error.png" alt="Error message" style="width: 79%;">
+    <img src="/OAIxCOTS/images/general/error.png" alt="Error message" style="width: 79%;">
     
     <p>We did the following to solve the disconnection issues:</p>
 
@@ -114,7 +119,7 @@ export LAUNCH_MODE=TESTBED
     <p>For full reference, check the <a href="https://gitlab.eurecom.fr/oai/cn5g/oai-cn5g-fed/-/blob/master/docs/LIST_OF_TESTED_COTSUE.md">official guide</a>.</p>
     
     <h2>Performance Tuning</h2>
-    <img src="/OAIxCOTS/images/speedstep.jpg" alt="SpeedStep BIOS setting" style="width: 79%;">
+    <img src="/OAIxCOTS/images/general/speedstep.jpg" alt="SpeedStep BIOS setting" style="width: 79%;">
 
     <p>We also recommend that users disable SpeedStep from the BIOS menu.</p>
 
@@ -129,5 +134,11 @@ export LAUNCH_MODE=TESTBED
             slides.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
     </script>
+    <script>
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    </script>
+    <footer>
+    <p>&copy; 2024 Aayam Raj Shakya.</p>
+</footer>
 </body>
 </html>
